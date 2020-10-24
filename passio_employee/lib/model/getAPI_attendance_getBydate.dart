@@ -1,36 +1,32 @@
-
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:passioemployee/model/url/url_api.dart';
 
-import 'model_news.dart';
-
-
-class GetAPINews{
+class GetByDateAPI {
   static int status;
-  getNews(String token) async {
+
+  getByDate(String token, String date, String empId) async {
     final response = await http.get(
-      '${url_main}/${url_new}',
+      '${url_main}/${url_get_by_date}/$empId?date=$date',
       headers: <String, String>{
         'Content-Type': 'application/json',
         'Accept': 'application/json',
-        // 'Authorization': 'Bearer $token',
-      },);
-    print("Status News: ${response.statusCode}");
-    if (response.statusCode == 200)  {
+        'Authorization': 'Bearer $token',
+      },
+    );
+    print("Status GetByDate: ${response.statusCode}");
+    if (response.statusCode == 200) {
       // If the server did return a 201 CREATED response,
       // then parse the JSON.
       // Map<String, dynamic> data_map = json.decode(response.body);
       List<dynamic> data_list = json.decode(response.body);
       // List<dynamic> data_list_all = data_map[''];
       status = 200;
-      print('News: 200');
+      print('GetByDate: 200');
 
-
-
-      print('List News: ${data_list.toString()}');
+      print('List GetByDate: ${data_list.toString()}');
       // DataNews data = DataNews.fromJson(jsonDecode(response.body));
-     // print(data.toString());
+      // print(data.toString());
 
       return data_list;
     } else {
@@ -40,5 +36,4 @@ class GetAPINews{
       throw Exception('Failed to load data');
     }
   }
-
 }

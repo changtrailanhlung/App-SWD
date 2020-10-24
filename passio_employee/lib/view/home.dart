@@ -24,7 +24,6 @@ class Home extends StatefulWidget{
 
 class HomeState extends State<Home>{
    static String token;
-   // final String url_new = "";
   int _selectedPage = 0;
   final _pageOptions = [ // Thay Text bằng class để Naviga
     Home(),
@@ -40,19 +39,23 @@ class HomeState extends State<Home>{
     print('Token get !!!');
     _getNews();
   }
-    GetAPINews getNew = GetAPINews();
-    List<dynamic> data_list = [];
-    List<DataNews> data_list_news = [];
-   void  _getNews() async{
-     int i = 0;
-     data_list = await getNew.getNews(token);
-     // print('${data_list.length}');
-     data_list.forEach((element) {
-       Map<dynamic, dynamic> data = element;
-       data_list_news.add(DataNews.fromJson(data));
-       print('ID: ${data_list_news[i++].store_id}');
-     });
-   }
+   GetAPINews getNew = GetAPINews();
+   List<dynamic> data_list = [];
+   List<DataNews> data_list_news = [];
+  void _getNews() async{
+    int i = 0;
+    data_list = await getNew.getNews(token);
+    print('${data_list.length}');
+    data_list.forEach((element) {
+      Map<dynamic, dynamic> data= element;
+      data_list_news.add(DataNews.fromJson(data));
+      print('ID: ${data_list_news[i++].id}');
+    });
+    // print('Data List: ${data_list.length}');
+    // for(int i =0; i< data_list.length; i++){
+    //   print('Code News: ${data_list[i].id}');
+    // }
+  }
 
   void _getToken()async{
     final prefs = await SharedPreferences.getInstance();
@@ -70,52 +73,37 @@ class HomeState extends State<Home>{
         title: Text("Tin tức", style: TextStyle(color: Colors.black),),
       ),
       body: FutureBuilder(
-              future:  getNew.getNews(token),
-              builder: (context, snapshot) {
-                if(snapshot.hasError){
-                  print(snapshot.error);
-                }
-                if(snapshot.hasData){
-                  return  new  Column(
-                    children: [
-                      Expanded(
-                        child: ListView.builder(
-                          itemCount: data_list_news == null ? 0 : data_list_news.length,
-                          itemBuilder: (context, index) {
-                            return GestureDetector(
-                              child: Padding(
-                                padding: const EdgeInsets.only(left: 10.0, right: 10.0),
-                                child: new Center(
-                                  child: new Column(
-                                    crossAxisAlignment: CrossAxisAlignment.stretch,
-                                    children: <Widget>[
-                                      cardNews(data_list_news[index].name,""),
+          future:  getNew.getNews(token),
+          builder: (context, snapshot) {
+            if(snapshot.hasError){
+              print(snapshot.error);
+            }
+            if(snapshot.hasData){
+              return  new  Column(
+                children: [
+                  Expanded(
+                    child: ListView.builder(
+                      itemCount: data_list_news.length,
+                      itemBuilder: (context, index) {
+                        String dateTime = data_list_news[index].date_create;
+//                          if(data_list[index].employee_name == _nameEmp){
+                        return GestureDetector(
+                          child: Padding(
+                            padding: const EdgeInsets.only(left: 10.0, right: 10.0),
+                            child: cardNews(data_list_news[index].name, data_list_news[index].content_html, '${dateTime.substring(0, 10).trim()}', '${data_list_news[index].id}'),
+                          ),
+                        );
+//                          }
+                      },
+                    ),
+                  ),
+                ],
+              );
+            }else {
+              return Center(child: CircularProgressIndicator());
+            }
 
-                                      // new Card(
-                                      //   child: new Container(
-                                      //     // padding: new EdgeInsets.all(50.0),
-                                      //     // child: new Column(
-                                      //     //     children: <Widget>[
-                                      //     //       cardNews(data_list_news[index].name,data_list_news[index].name),
-                                      //     //     ])
-                                      //   ),
-                                      // )
-                                    ],
-                                  )
-                                )
-                              ),
-                            );
-                          },
-                        ),
-                      ),
-                    ],
-                  );
-                }else {
-                  return Center(child: CircularProgressIndicator());
-                }
-              } ),
-
-
+          } ),
 
      bottomNavigationBar: BottomNavigationBar(
 //       fixedColor: Color.fromARGB(255, 168,206,60),\
@@ -148,4 +136,3 @@ class HomeState extends State<Home>{
   }
 
 }
-
